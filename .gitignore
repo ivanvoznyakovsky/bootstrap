@@ -14,7 +14,9 @@ lib-cov
 pids
 logs
 results
-dist
+dist/*
+!dist/*.css
+!dist/*.js
 # test coverage files
 .coverage/
 
