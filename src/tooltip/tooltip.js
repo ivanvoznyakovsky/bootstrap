@@ -155,6 +155,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             var contentParse = options.useContentExp ? $parse(attrs[ttType]) : false;
             var observers = [];
             var lastPlacement;
+            var lastPosition;
 
             var positionTooltip = function() {
               // check if tooltip exists and is not empty
@@ -163,6 +164,21 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
               if (!positionTimeout) {
                 positionTimeout = $timeout(function() {
                   var ttPosition = $position.positionElements(element, tooltip, ttScope.placement, appendToBody);
+
+                  if (lastPosition) {
+                    /**
+                     * For whatever reason on Windows in Chromium v84 based browsers top and left values
+                     * have difference in 1px between subsequent digest cycles.
+                     * This results in tooltip blinking all the time. In this case we just leave the tooltip
+                     * where it was last time.
+                     */
+                    ['top', 'left'].forEach(function(key) {
+                      if (Math.abs(ttPosition[key] - lastPosition[key]) <= 1) {
+                        ttPosition[key] = lastPosition[key];
+                      }
+                    });
+                  }
+
                   tooltip.css({ top: ttPosition.top + 'px', left: ttPosition.left + 'px' });
 
                   if (!tooltip.hasClass(ttPosition.placement.split('-')[0])) {
@@ -185,6 +201,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                     $position.positionArrow(tooltip, ttPosition.placement);
                   }
                   lastPlacement = ttPosition.placement;
+                  lastPosition = ttPosition;
 
                   positionTimeout = null;
                 }, 0, false);
