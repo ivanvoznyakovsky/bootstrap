@@ -173,7 +173,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                      * where it was last time.
                      */
                     ['top', 'left'].forEach(function(key) {
-                      if (Math.abs(ttPosition[key] - lastPosition[key]) <= 1) {
+                      if (Math.abs(ttPosition[key] - lastPosition[key]) <= 2) {
                         ttPosition[key] = lastPosition[key];
                       }
                     });
